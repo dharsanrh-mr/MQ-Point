@@ -1,20 +1,13 @@
-# Rummy Arena – Rummy + 7S v7
+# Rummy Arena Rummy + 7S v8
 
-Mobile-only GitHub Pages app with LocalStorage.
-
-## Modes
-### Rummy
-Lowest total points wins.
-
-### 7S
-- Rounds 1–6: entered points are normal.
-- Every 7th round: entered points are doubled.
-- Example: 7th round input `2` → table shows `4`.
-- Player total is calculated using the converted score.
-- Lowest total points wins.
-
-Example:
-R1=2, R2=3, R3=1, R4=2, R5=4, R6=2, R7=2
-Total = 2+3+1+2+4+2+4 = 18.
-
-Data remains in browser LocalStorage. Backup/restore can be added/used for device transfer.
+- Mobile-only
+- Red felt online background
+- Rummy: unlimited rounds, lowest total wins
+- 7S: exactly 7 rounds
+- 7S rounds 1-6 are normal
+- 7S round 7 doubles points (2 becomes 4)
+- 7S automatically calculates and announces the lowest-score winner immediately after Round 7 is saved
+- Round 8 cannot be added in 7S
+- Score/mark input area is enlarged and clearly focusable
+- LocalStorage + JSON backup/restore
+- GitHub Pages compatible

@@ -39,7 +39,7 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
 .mode-tab{height:46px;border:1px solid #713337;border-radius:13px;background:rgba(10,8,10,.88);color:#aaa;font-weight:900;font-size:13px}
 .mode-tab.active{background:linear-gradient(135deg,#f02b25,#a70f0d);color:#fff;border-color:#ff6861;box-shadow:0 0 16px #e3262050}
 .seven-badge{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:8px;background:#8f0d0b;color:#fff;font-size:9px;font-weight:900}
-</style>
+.score-line{min-height:62px;cursor:text}.score-mark{min-height:44px;font-size:17px!important;text-align:center;font-weight:900}.score-mark:focus{border-color:#ff5b55!important;box-shadow:0 0 0 3px #ff332633,0 0 16px #ff332633}.score-line:focus-within{border-color:#ff5b55;box-shadow:0 0 14px #ff332633}</style>
 </head>
 <body>
   <div class="app">
@@ -169,87 +169,92 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
   </div>
   <div id="toast" class="toast"></div>
   <script>
-const KEY="rummyArena_v1";
+const KEY="rummyArena_v2";
 const defaultState={gameNo:1,mode:"rummy",players:[],rounds:[],history:[],rule:"lowest",winner:null};
 let state=load();
-function load(){try{return {...defaultState,...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch(e){return {...defaultState}}}
+function load(){try{return {...defaultState,...JSON.parse(localStorage.getItem(KEY)||"{}")} }catch(e){return {...defaultState}}}
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-function toast(msg){const t=document.getElementById("toast");t.textContent=msg;t.classList.add("show");setTimeout(()=>t.classList.remove("show"),1800)}
-
+function toast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1800)}
 function isSevenMode(){return state.mode==="7s"}
-function scoreForRound(raw, roundIndex){
-  const n=Number(raw)||0;
-  // 7S rule: rounds 1-6 are normal; every 7th round doubles the entered points.
-  return isSevenMode() && ((roundIndex+1)%7===0) ? n*2 : n;
-}
-function roundLabel(i){return isSevenMode() && ((i+1)%7===0) ? `R${i+1} ×2` : `R${i+1}`}
-function updateModeUI(){
-  const r=document.getElementById("rummyModeBtn"), s=document.getElementById("sevensModeBtn");
-  if(r&&s){r.classList.toggle("active",state.mode==="rummy");s.classList.toggle("active",state.mode==="7s")}
-  const text=document.getElementById("modeRuleText");
-  if(text) text.textContent=state.mode==="rummy"
-    ?"Rummy: lowest total points wins."
-    :"7S: rounds 1–6 are normal. Every 7th round doubles the entered points (example: 2 → 4). Lowest total wins.";
-}
-function totals(){
-  return state.players.map((name,i)=>({
-    name,
-    total:state.rounds.reduce((s,r,ri)=>s+scoreForRound(r.scores[i],ri),0)
-  }));
-}
-function ranked(){
-  const a=totals();
-  a.sort((x,y)=>state.rule==="highest"?y.total-x.total:x.total-y.total);
-  return a;
-}
-function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id)); if(id==="roundPage")renderScoreInputs(); window.scrollTo({top:0,behavior:"smooth"})}
-function render(){
-  updateModeUI();
-  document.getElementById("gameLabel").textContent=`GAME #${state.gameNo} • ${state.mode==="7s"?"7S":"RUMMY"}`;
-  document.getElementById("playerCount").textContent=state.players.length;
-  document.getElementById("roundCount").textContent=state.rounds.length;
-  const r=ranked(), lead=r[0];
-  document.getElementById("leaderName").textContent=lead?.name||"—";
-  document.getElementById("topScore").textContent=lead?.total||0;
-  const winner=state.winner|| (state.history[0]&&state.history[0].winner);
-  document.getElementById("winnerName").textContent=winner?.name||"—";
-  document.getElementById("winnerScore").textContent=winner?.score||0;
-  document.getElementById("winnerDate").textContent=winner?.date||"Finish a game to see the winner";
-  document.getElementById("rankingList").innerHTML=r.slice(0,5).map((p,i)=>`<div class="list-row"><span class="rank">${i+1}</span><div><strong>${esc(p.name)}</strong><small>${state.rounds.length} rounds</small></div><span class="points">${p.total}</span></div>`).join("")||`<div class="muted">Add players to begin.</div>`;
-  document.getElementById("winnerList").innerHTML=state.history.slice(0,5).map(g=>`<div class="list-row"><span class="rank">♛</span><div><strong>${esc(g.winner.name)}</strong><small>${g.date}</small></div><span class="points">${g.winner.score}</span></div>`).join("")||`<div class="muted">No completed games yet.</div>`;
-  renderTable(); renderPlayers(); renderHistory();
-  document.getElementById("ruleSelect").value="lowest";
-}
-function renderTable(){
-  const head=document.getElementById("tableHead"), body=document.getElementById("tableBody");
-  head.innerHTML=`<tr><th>RANK</th><th>PLAYER</th>${state.rounds.map((_,i)=>`<th>${roundLabel(i)}</th>`).join("")}<th>TOTAL</th></tr>`;
-  const rankedPlayers=ranked();
-  body.innerHTML=rankedPlayers.map((p,rank)=>{
-    const idx=state.players.indexOf(p.name);
-    return `<tr class="${rank===0?'leader-row':''}"><td>${rank+1}</td><td>${esc(p.name)}</td>${state.rounds.map((r,ri)=>`<td>${scoreForRound(r.scores[idx],ri)}</td>`).join("")}<td>${p.total}</td></tr>`
-  }).join("");
-}
-function renderPlayers(){document.getElementById("playerChips").innerHTML=state.players.map((p,i)=>`<span class="chip">${esc(p)} <button onclick="removePlayer(${i})">×</button></span>`).join("")||`<span class="muted">No players added.</span>`}
-function renderScoreInputs(){const rn=state.rounds.length+1;document.getElementById("nextRoundNo").textContent=rn;
-const hint=isSevenMode()&&rn%7===0?" (×2)":"";
-document.getElementById("scoreInputs").innerHTML=state.players.map(p=>`<div class="score-line"><span>${esc(p)}${hint?` <span class="seven-badge">7S ×2</span>`:""}</span><input type="number" min="0" inputmode="numeric" data-player="${escAttr(p)}" placeholder="0"></div>`).join("")||`<div class="muted">Add players first.</div>`}
-function renderHistory(){document.getElementById("historyList").innerHTML=state.history.map((g,i)=>`<div class="history-card"><strong>GAME #${g.gameNo}</strong><div>${esc(g.winner.name)} — ${g.winner.score} points</div><div class="muted">${g.date} • ${g.players.length} players • ${g.rounds.length} rounds</div><button class="outline-btn" onclick="deleteHistory(${i})">DELETE</button></div>`).join("")||`<div class="muted">Completed games will appear here.</div>`}
-function addPlayer(){const input=document.getElementById("playerInput"),name=input.value.trim();if(!name)return toast("Enter a player name");if(state.players.some(p=>p.toLowerCase()===name.toLowerCase()))return toast("Player already exists");state.players.push(name);input.value="";save();toast("Player added")}
-function removePlayer(i){if(!confirm(`Remove ${state.players[i]}?`))return;state.players.splice(i,1);state.rounds.forEach(r=>r.scores.splice(i,1));save()}
-function addRound(){if(!state.players.length)return toast("Add players first");go("roundPage")}
-function saveRound(){const inputs=[...document.querySelectorAll("#scoreInputs input")];const scores=state.players.map(p=>Number(inputs.find(x=>x.dataset.player===p)?.value)||0);state.rounds.push({scores,date:new Date().toLocaleString()});state.winner=null;save();toast(`Round ${state.rounds.length} saved`);go("tablePage")}
-function finishGame(){if(!state.players.length||!state.rounds.length)return toast("Add players and at least one round");state.rule="lowest";const r=ranked()[0],winner={name:r.name,score:r.total,date:new Date().toLocaleString()};state.winner=winner;state.history.unshift({gameNo:state.gameNo,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner});save();toast(`${winner.name} wins!`)}
-function newGame(){if(state.players.length&&state.rounds.length){state.rule="lowest";const r=ranked()[0];const w={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:w})}state.gameNo++;state.players=[];state.rounds=[];state.winner=null;save();go("addPage");toast(`Game #${state.gameNo} ready`)}
-function startGame(){if(state.players.length===0)return toast("Add at least one player");state.rounds=[];state.winner=null;save();go("tablePage")}
-function deleteHistory(i){if(confirm("Delete this game from history?")){state.history.splice(i,1);save()}}
-function backup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`rummy-arena-backup-${Date.now()}.json`;a.click();URL.revokeObjectURL(a.href)}
-function restore(file){const reader=new FileReader();reader.onload=()=>{try{state={...defaultState,...JSON.parse(reader.result)};save();toast("Backup restored")}catch(e){toast("Invalid backup file")}};reader.readAsText(file)}
+function effectiveScore(raw,roundIndex){const n=Math.max(0,Number(raw)||0);return isSevenMode() && (roundIndex+1)%7===0?n*2:n}
+function roundLabel(i){return isSevenMode() && (i+1)%7===0?`R${i+1} ×2`:`R${i+1}`}
+function totals(){return state.players.map((name,i)=>({name,total:state.rounds.reduce((sum,r,ri)=>sum+effectiveScore(r.scores[i],ri),0)}))}
+function ranked(){return totals().sort((a,b)=>a.total-b.total)}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function escAttr(s){return esc(s)}
-document.addEventListener("click",e=>{
-  const n=e.target.closest("[data-page]");
-  if(n){e.preventDefault();go(n.dataset.page)}
-});
+function updateModeUI(){
+ const r=document.getElementById("rummyModeBtn"),s=document.getElementById("sevensModeBtn");
+ if(r&&s){r.classList.toggle("active",state.mode==="rummy");s.classList.toggle("active",state.mode==="7s")}
+ const rule=document.getElementById("modeRuleText");
+ if(rule)rule.textContent=state.mode==="7s"?"7S: exactly 7 rounds. R1–R6 normal; R7 doubles points (2 → 4). After R7, the lowest total automatically wins.":"Rummy: normal points. Lowest total points wins.";
+}
+function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));if(id==="roundPage")renderScoreInputs();window.scrollTo({top:0,behavior:"smooth"})}
+function render(){
+ updateModeUI();
+ const gameLabel=document.getElementById("gameLabel");if(gameLabel)gameLabel.textContent=`GAME #${state.gameNo} • ${state.mode==="7s"?"7S":"RUMMY"}`;
+ const pc=document.getElementById("playerCount");if(pc)pc.textContent=state.players.length;
+ const rc=document.getElementById("roundCount");if(rc)rc.textContent=state.rounds.length;
+ const r=ranked(),lead=r[0];
+ document.getElementById("leaderName").textContent=lead?.name||"—";
+ document.getElementById("topScore").textContent=lead?.total??0;
+ const winner=state.winner||state.history[0]?.winner;
+ document.getElementById("winnerName").textContent=winner?.name||"—";
+ document.getElementById("winnerScore").textContent=winner?.score??0;
+ document.getElementById("winnerDate").textContent=winner?.date||"No winner yet";
+ document.getElementById("rankingList").innerHTML=r.slice(0,5).map((p,i)=>`<div class="list-row"><span class="rank">${i+1}</span><div><strong>${esc(p.name)}</strong><small>${state.rounds.length}${isSevenMode()?"/7":""} rounds</small></div><span class="points">${p.total}</span></div>`).join("")||`<div class="muted">Add players to begin.</div>`;
+ document.getElementById("winnerList").innerHTML=state.history.slice(0,5).map(g=>`<div class="list-row"><span class="rank">♛</span><div><strong>${esc(g.winner.name)}</strong><small>${esc(g.date)} • ${g.mode==="7s"?"7S":"Rummy"}</small></div><span class="points">${g.winner.score}</span></div>`).join("")||`<div class="muted">No completed games yet.</div>`;
+ renderTable();renderPlayers();renderHistory();
+ const rs=document.getElementById("ruleSelect");if(rs)rs.value="lowest";
+}
+function renderTable(){
+ const head=document.getElementById("tableHead"),body=document.getElementById("tableBody");
+ head.innerHTML=`<tr><th>RANK</th><th>PLAYER</th>${state.rounds.map((_,i)=>`<th>${roundLabel(i)}</th>`).join("")}<th>TOTAL</th></tr>`;
+ body.innerHTML=ranked().map((p,rank)=>{const idx=state.players.indexOf(p.name);return `<tr class="${rank===0?'leader-row':''}"><td>${rank+1}</td><td>${esc(p.name)}</td>${state.rounds.map((rr,ri)=>`<td>${effectiveScore(rr.scores[idx],ri)}</td>`).join("")}<td>${p.total}</td></tr>`}).join("");
+}
+function renderPlayers(){document.getElementById("playerChips").innerHTML=state.players.map((p,i)=>`<span class="chip">${esc(p)} <button type="button" onclick="removePlayer(${i})">×</button></span>`).join("")||`<span class="muted">No players added.</span>`}
+function renderScoreInputs(){
+ const rn=state.rounds.length+1;
+ document.getElementById("nextRoundNo").textContent=isSevenMode()?`${rn}/7`:rn;
+ if(isSevenMode()&&rn>7){document.getElementById("scoreInputs").innerHTML=`<div class="form-card"><label>7S GAME COMPLETE</label><p class="muted">Round 7 is already completed. Winner: <b>${esc(state.winner?.name||"—")}</b></p></div>`;return}
+ const seventh=isSevenMode()&&rn===7;
+ document.getElementById("scoreInputs").innerHTML=state.players.map(p=>`<div class="score-line"><span><b>${esc(p)}</b>${seventh?` <span class="seven-badge">7S ×2</span>`:""}</span><input class="score-mark" type="number" min="0" step="1" inputmode="numeric" data-player="${escAttr(p)}" placeholder="${seventh?'Enter points (×2)':'Enter points'}" aria-label="Points for ${escAttr(p)}"></div>`).join("")||`<div class="muted">Add players first.</div>`;
+}
+function renderHistory(){document.getElementById("historyList").innerHTML=state.history.map((g,i)=>`<div class="history-card"><strong>GAME #${g.gameNo} • ${g.mode==="7s"?"7S":"RUMMY"}</strong><div>${esc(g.winner.name)} — ${g.winner.score} points</div><div class="muted">${esc(g.winner.date)} • ${g.players.length} players • ${g.rounds.length} rounds</div><button class="outline-btn" type="button" onclick="deleteHistory(${i})">DELETE</button></div>`).join("")||`<div class="muted">Completed games will appear here.</div>`}
+function addPlayer(){const input=document.getElementById("playerInput"),name=input.value.trim();if(!name)return toast("Enter a player name");if(state.players.some(p=>p.toLowerCase()===name.toLowerCase()))return toast("Player already exists");state.players.push(name);input.value="";save();toast("Player added")}
+function removePlayer(i){if(!confirm(`Remove ${state.players[i]}?`))return;state.players.splice(i,1);state.rounds.forEach(r=>r.scores.splice(i,1));save()}
+function addRound(){if(!state.players.length)return toast("Add players first");if(isSevenMode()&&state.rounds.length>=7)return toast("7S is limited to 7 rounds");go("roundPage")}
+function saveRound(){
+ if(!state.players.length)return toast("Add players first");
+ if(isSevenMode()&&state.rounds.length>=7)return toast("7S already completed");
+ const inputs=[...document.querySelectorAll("#scoreInputs input")];
+ const scores=state.players.map(p=>Math.max(0,Number(inputs.find(x=>x.dataset.player===p)?.value)||0));
+ state.rounds.push({scores,date:new Date().toLocaleString()});
+ const completed=isSevenMode()&&state.rounds.length===7;
+ if(completed){state.rule="lowest";const r=ranked()[0];state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});save();go("homePage");toast(`${state.winner.name} wins 7S!`);return}
+ state.winner=null;save();toast(`Round ${state.rounds.length} saved`);go("tablePage")
+}
+function finishGame(){
+ if(!state.players.length||!state.rounds.length)return toast("Add players and at least one round");
+ if(isSevenMode()&&state.rounds.length<7)return toast(`7S needs all 7 rounds. ${state.rounds.length}/7 completed`);
+ if(state.winner)return toast(`${state.winner.name} already won this game`);
+ const r=ranked()[0];state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});save();toast(`${state.winner.name} wins!`)
+}
+function newGame(){
+ // Save an unfinished Rummy game only; 7S is never auto-saved before all 7 rounds.
+ if(state.mode==="rummy"&&state.players.length&&state.rounds.length&&!state.winner){const r=ranked()[0];const w={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:w})}
+ state.gameNo++;state.players=[];state.rounds=[];state.winner=null;state.rule="lowest";save();go("addPage");toast(`Game #${state.gameNo} ready`)
+}
+function startGame(){if(!state.players.length)return toast("Add at least one player");state.rounds=[];state.winner=null;state.rule="lowest";save();go("tablePage");toast(isSevenMode()?"7S game started — exactly 7 rounds":"Rummy game started")}
+function setMode(mode){
+ if(state.mode===mode)return;
+ if(state.players.length||state.rounds.length){if(!confirm("Changing mode will start a fresh game. Continue?"))return;state.gameNo++;state.players=[];state.rounds=[];state.winner=null}
+ state.mode=mode;state.rule="lowest";save();go("homePage");toast(mode==="7s"?"7S mode selected":"Rummy mode selected")
+}
+function deleteHistory(i){if(confirm("Delete this game from history?")){state.history.splice(i,1);save()}}
+function backup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`rummy-arena-backup-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
+function restore(file){const reader=new FileReader();reader.onload=()=>{try{state={...defaultState,...JSON.parse(reader.result)};state.rule="lowest";save();toast("Backup restored")}catch(e){toast("Invalid backup file")}};reader.readAsText(file)}
+
+document.addEventListener("click",e=>{const n=e.target.closest("[data-page]");if(n){e.preventDefault();go(n.dataset.page)}});
 document.getElementById("savePlayerBtn").onclick=addPlayer;
 document.getElementById("playerInput").addEventListener("keydown",e=>{if(e.key==="Enter")addPlayer()});
 document.getElementById("addRoundBtn").onclick=addRound;
@@ -259,26 +264,10 @@ document.getElementById("newGameBtn").onclick=newGame;
 document.getElementById("startGameBtn").onclick=startGame;
 document.getElementById("backupBtn").onclick=backup;
 document.getElementById("restoreInput").onchange=e=>e.target.files[0]&&restore(e.target.files[0]);
-document.getElementById("clearAllBtn").onclick=()=>{if(confirm("Clear ALL local Rummy Arena data?")){localStorage.removeItem(KEY);state={...defaultState};
-function setMode(mode){
-  if(state.players.length || state.rounds.length){
-    if(!confirm("Changing mode starts a fresh game. Continue?")) return;
-    state.gameNo++;
-    state.players=[];
-    state.rounds=[];
-    state.winner=null;
-  }
-  state.mode=mode;
-  state.rule="lowest";
-  save();
-  go("homePage");
-  toast(mode==="7s"?"7S mode selected":"Rummy mode selected");
-}
+document.getElementById("clearAllBtn").onclick=()=>{if(confirm("Clear ALL local Rummy Arena data?")){localStorage.removeItem(KEY);state={...defaultState};render();toast("All data cleared")}};
+document.getElementById("ruleSelect").onchange=()=>{state.rule="lowest";save();toast("Lowest score wins")};
 document.getElementById("rummyModeBtn").onclick=()=>setMode("rummy");
 document.getElementById("sevensModeBtn").onclick=()=>setMode("7s");
-
-render();toast("All data cleared")}};
-document.getElementById("ruleSelect").onchange=()=>{state.rule="lowest";save();toast("Lowest score wins in Rummy and 7S")};
 render();
 </script>
 </body>
