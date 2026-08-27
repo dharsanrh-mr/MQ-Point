@@ -1,21 +1,11 @@
-# Rummy Arena — Mobile Point Table
-
-A mobile-only Rummy point-table app built with plain HTML, CSS and JavaScript.
-
-## Features
-- Premium black / gold / red mobile UI
-- Add/remove players
-- Add rounds and enter points
-- Automatic totals and rankings
-- Highest/lowest total winner rule
-- Winner and game history
-- LocalStorage persistence
-- JSON backup / restore
+# Rummy Arena – Red Felt v6
+Mobile-only Rummy Point Table UI.
+- Online red felt playing-card background
+- Dark overlay for readable content
+- Red glass cards and red action buttons
+- LocalStorage data
 - GitHub Pages compatible
-- No backend required
+- No desktop layout
 
-## GitHub Pages
-Upload `index.html`, `style.css`, and `app.js` to a GitHub repository.
-Enable **Settings → Pages → Deploy from branch** and select the main branch/root.
-
-Note: LocalStorage is device/browser specific. Backup/Restore is included for moving data between devices.
+Upload `index.html` to the repository root.
+If GitHub shows an older version, hard refresh or open the site in a private/incognito tab.
