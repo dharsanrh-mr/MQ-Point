@@ -47,7 +47,10 @@ function backup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"appl
 function restore(file){const reader=new FileReader();reader.onload=()=>{try{state={...defaultState,...JSON.parse(reader.result)};save();toast("Backup restored")}catch(e){toast("Invalid backup file")}};reader.readAsText(file)}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
 function escAttr(s){return esc(s)}
-document.addEventListener("click",e=>{const n=e.target.closest("[data-page]");if(n)go(n.dataset.page)});
+document.addEventListener("click",e=>{
+  const n=e.target.closest("[data-page]");
+  if(n){e.preventDefault();go(n.dataset.page)}
+});
 document.getElementById("savePlayerBtn").onclick=addPlayer;
 document.getElementById("playerInput").addEventListener("keydown",e=>{if(e.key==="Enter")addPlayer()});
 document.getElementById("addRoundBtn").onclick=addRound;
