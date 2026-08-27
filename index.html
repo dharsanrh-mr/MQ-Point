@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090909">
-  <title>Rummy Arena • Royal Gold Point Table</title>
+  <title>Rummy Arena • Rummy + 7S Point Table</title>
   <style>
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;background:#240407;color:#fff;font-family:Arial,Helvetica,sans-serif}
@@ -169,15 +169,69 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
   </div>
   <div id="toast" class="toast"></div>
   <script>
-const KEY="rummyArena_v2";
-const defaultState={gameNo:1,mode:"rummy",players:[],rounds:[],history:[],rule:"lowest",winner:null};
-let state=load();
-function load(){try{return {...defaultState,...JSON.parse(localStorage.getItem(KEY)||"{}")} }catch(e){return {...defaultState}}}
-function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
-function toast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1800)}
+const KEY="rummyArena_v3";
+const modeDefault=()=>({gameNo:1,players:[],rounds:[],winner:null,rule:"lowest"});
+const defaultState={mode:"rummy",history:[],modes:{rummy:modeDefault(),"7s":modeDefault()}};
+
+function load(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(raw&&raw.modes&&raw.modes.rummy&&raw.modes["7s"]){
+      const s={...defaultState,...raw};
+      s.modes.rummy={...modeDefault(),...s.modes.rummy};
+      s.modes["7s"]={...modeDefault(),...s.modes["7s"]};
+      s.history=Array.isArray(s.history)?s.history:[];
+      return s;
+    }
+    // Migrate the previous single-mode format without losing its data.
+    if(raw){
+      const migrated={...defaultState,mode:raw.mode||"rummy",history:Array.isArray(raw.history)?raw.history:[],modes:{rummy:modeDefault(),"7s":modeDefault()}};
+      migrated.modes[migrated.mode]={gameNo:raw.gameNo||1,players:raw.players||[],rounds:raw.rounds||[],winner:raw.winner||null,rule:"lowest"};
+      return migrated;
+    }
+  }catch(e){}
+  return {...defaultState,modes:{rummy:modeDefault(),"7s":modeDefault()}};
+}
+
+let store=load();
+let state=loadMode(store.mode);
+
+function loadMode(mode){
+  const m=store.modes[mode]||modeDefault();
+  return {
+    mode,
+    gameNo:m.gameNo||1,
+    players:Array.isArray(m.players)?m.players:[],
+    rounds:Array.isArray(m.rounds)?m.rounds:[],
+    winner:m.winner||null,
+    rule:"lowest",
+    history:store.history
+  };
+}
+function save(){
+  store.mode=state.mode;
+  store.history=state.history;
+  store.modes[state.mode]={gameNo:state.gameNo,players:state.players,rounds:state.rounds,winner:state.winner,rule:"lowest"};
+  localStorage.setItem(KEY,JSON.stringify(store));
+  render();
+}
+function switchMode(mode){
+  if(state.mode===mode)return;
+  // Save the current mode exactly as it is before switching.
+  save();
+  state=loadMode(mode);
+  state.history=store.history;
+  render();
+  go("homePage");
+  toast(mode==="7s"?"7S mode selected — previous 7S game restored":"Rummy mode selected — previous Rummy game restored");
+}
+function toast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1900)}
 function isSevenMode(){return state.mode==="7s"}
-function effectiveScore(raw,roundIndex){const n=Math.max(0,Number(raw)||0);const r=roundIndex+1;return isSevenMode() && (r===1||r===7)?n*2:n}
-function roundLabel(i){const r=i+1;return isSevenMode() && (r===1||r===7)?`R${r} ×2`:`R${r}`}
+function effectiveScore(raw,roundIndex){
+  const n=Math.max(0,Number(raw)||0),r=roundIndex+1;
+  return isSevenMode()&&(r===1||r===7)?n*2:n;
+}
+function roundLabel(i){const r=i+1;return isSevenMode()&&(r===1||r===7)?`R${r} ×2`:`R${r}`}
 function totals(){return state.players.map((name,i)=>({name,total:state.rounds.reduce((sum,r,ri)=>sum+effectiveScore(r.scores[i],ri),0)}))}
 function ranked(){return totals().sort((a,b)=>a.total-b.total)}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -188,7 +242,12 @@ function updateModeUI(){
  const rule=document.getElementById("modeRuleText");
  if(rule)rule.textContent=state.mode==="7s"?"7S: exactly 7 rounds. R1 and R7 double points (2 → 4); R2–R6 are normal. After R7, the lowest total automatically wins.":"Rummy: normal points. Lowest total points wins.";
 }
-function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));if(id==="roundPage")renderScoreInputs();window.scrollTo({top:0,behavior:"smooth"})}
+function go(id){
+ document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));
+ document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));
+ if(id==="roundPage")renderScoreInputs();
+ window.scrollTo({top:0,behavior:"smooth"})
+}
 function render(){
  updateModeUI();
  const gameLabel=document.getElementById("gameLabel");if(gameLabel)gameLabel.textContent=`GAME #${state.gameNo} • ${state.mode==="7s"?"7S":"RUMMY"}`;
@@ -197,12 +256,12 @@ function render(){
  const r=ranked(),lead=r[0];
  document.getElementById("leaderName").textContent=lead?.name||"—";
  document.getElementById("topScore").textContent=lead?.total??0;
- const winner=state.winner||state.history[0]?.winner;
+ const winner=state.winner||state.history.filter(g=>g.mode===state.mode)[0]?.winner;
  document.getElementById("winnerName").textContent=winner?.name||"—";
  document.getElementById("winnerScore").textContent=winner?.score??0;
  document.getElementById("winnerDate").textContent=winner?.date||"No winner yet";
  document.getElementById("rankingList").innerHTML=r.slice(0,5).map((p,i)=>`<div class="list-row"><span class="rank">${i+1}</span><div><strong>${esc(p.name)}</strong><small>${state.rounds.length}${isSevenMode()?"/7":""} rounds</small></div><span class="points">${p.total}</span></div>`).join("")||`<div class="muted">Add players to begin.</div>`;
- document.getElementById("winnerList").innerHTML=state.history.slice(0,5).map(g=>`<div class="list-row"><span class="rank">♛</span><div><strong>${esc(g.winner.name)}</strong><small>${esc(g.date)} • ${g.mode==="7s"?"7S":"Rummy"}</small></div><span class="points">${g.winner.score}</span></div>`).join("")||`<div class="muted">No completed games yet.</div>`;
+ document.getElementById("winnerList").innerHTML=state.history.filter(g=>g.mode===state.mode).slice(0,5).map(g=>`<div class="list-row"><span class="rank">♛</span><div><strong>${esc(g.winner.name)}</strong><small>${esc(g.date)} • ${g.mode==="7s"?"7S":"Rummy"}</small></div><span class="points">${g.winner.score}</span></div>`).join("")||`<div class="muted">No completed ${isSevenMode()?"7S":"Rummy"} games yet.</div>`;
  renderTable();renderPlayers();renderHistory();
  const rs=document.getElementById("ruleSelect");if(rs)rs.value="lowest";
 }
@@ -230,29 +289,54 @@ function saveRound(){
  const scores=state.players.map(p=>Math.max(0,Number(inputs.find(x=>x.dataset.player===p)?.value)||0));
  state.rounds.push({scores,date:new Date().toLocaleString()});
  const completed=isSevenMode()&&state.rounds.length===7;
- if(completed){state.rule="lowest";const r=ranked()[0];state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});save();go("homePage");toast(`${state.winner.name} wins 7S!`);return}
+ if(completed){
+   state.rule="lowest";
+   const r=ranked()[0];
+   state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};
+   state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});
+   save();go("homePage");toast(`${state.winner.name} wins 7S!`);return
+ }
  state.winner=null;save();toast(`Round ${state.rounds.length} saved`);go("tablePage")
 }
 function finishGame(){
  if(!state.players.length||!state.rounds.length)return toast("Add players and at least one round");
  if(isSevenMode()&&state.rounds.length<7)return toast(`7S needs all 7 rounds. ${state.rounds.length}/7 completed`);
  if(state.winner)return toast(`${state.winner.name} already won this game`);
- const r=ranked()[0];state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});save();toast(`${state.winner.name} wins!`)
+ const r=ranked()[0];
+ state.winner={name:r.name,score:r.total,date:new Date().toLocaleString()};
+ state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:state.winner});
+ save();toast(`${state.winner.name} wins!`)
 }
 function newGame(){
- // Save an unfinished Rummy game only; 7S is never auto-saved before all 7 rounds.
- if(state.mode==="rummy"&&state.players.length&&state.rounds.length&&!state.winner){const r=ranked()[0];const w={name:r.name,score:r.total,date:new Date().toLocaleString()};state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:w})}
- state.gameNo++;state.players=[];state.rounds=[];state.winner=null;state.rule="lowest";save();go("addPage");toast(`Game #${state.gameNo} ready`)
+ if(state.mode==="rummy"&&state.players.length&&state.rounds.length&&!state.winner){
+   const r=ranked()[0],w={name:r.name,score:r.total,date:new Date().toLocaleString()};
+   state.history.unshift({gameNo:state.gameNo,mode:state.mode,players:[...state.players],rounds:JSON.parse(JSON.stringify(state.rounds)),winner:w})
+ }
+ state.gameNo++;state.players=[];state.rounds=[];state.winner=null;state.rule="lowest";save();go("addPage");toast(`New ${state.mode==="7s"?"7S":"Rummy"} game #${state.gameNo} ready`)
 }
-function startGame(){if(!state.players.length)return toast("Add at least one player");state.rounds=[];state.winner=null;state.rule="lowest";save();go("tablePage");toast(isSevenMode()?"7S game started — exactly 7 rounds":"Rummy game started")}
-function setMode(mode){
- if(state.mode===mode)return;
- if(state.players.length||state.rounds.length){if(!confirm("Changing mode will start a fresh game. Continue?"))return;state.gameNo++;state.players=[];state.rounds=[];state.winner=null}
- state.mode=mode;state.rule="lowest";save();go("homePage");toast(mode==="7s"?"7S mode selected":"Rummy mode selected")
+function startGame(){
+ if(!state.players.length)return toast("Add at least one player");
+ // Start Game is an intentional reset of the selected mode's current game.
+ state.rounds=[];state.winner=null;state.rule="lowest";save();go("tablePage");
+ toast(isSevenMode()?"7S game started — exactly 7 rounds":"Rummy game started")
 }
+function setMode(mode){switchMode(mode)}
 function deleteHistory(i){if(confirm("Delete this game from history?")){state.history.splice(i,1);save()}}
-function backup(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`rummy-arena-backup-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)}
-function restore(file){const reader=new FileReader();reader.onload=()=>{try{state={...defaultState,...JSON.parse(reader.result)};state.rule="lowest";save();toast("Backup restored")}catch(e){toast("Invalid backup file")}};reader.readAsText(file)}
+function backup(){
+ save();
+ const blob=new Blob([JSON.stringify(store,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(blob);a.download=`rummy-arena-backup-${Date.now()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),500)
+}
+function restore(file){
+ const reader=new FileReader();reader.onload=()=>{
+  try{
+   const raw=JSON.parse(reader.result);
+   if(raw.modes){store={...defaultState,...raw,modes:{rummy:{...modeDefault(),...raw.modes.rummy}, "7s":{...modeDefault(),...raw.modes["7s"]}}}}
+   else{store={...defaultState,modes:{rummy:modeDefault(),"7s":modeDefault()},history:raw.history||[]};store.modes[raw.mode||"rummy"]={gameNo:raw.gameNo||1,players:raw.players||[],rounds:raw.rounds||[],winner:raw.winner||null,rule:"lowest"}}
+   state=loadMode(store.mode||"rummy");save();toast("Backup restored")
+  }catch(e){toast("Invalid backup file")}
+ };reader.readAsText(file)
+}
 
 document.addEventListener("click",e=>{const n=e.target.closest("[data-page]");if(n){e.preventDefault();go(n.dataset.page)}});
 document.getElementById("savePlayerBtn").onclick=addPlayer;
@@ -264,7 +348,7 @@ document.getElementById("newGameBtn").onclick=newGame;
 document.getElementById("startGameBtn").onclick=startGame;
 document.getElementById("backupBtn").onclick=backup;
 document.getElementById("restoreInput").onchange=e=>e.target.files[0]&&restore(e.target.files[0]);
-document.getElementById("clearAllBtn").onclick=()=>{if(confirm("Clear ALL local Rummy Arena data?")){localStorage.removeItem(KEY);state={...defaultState};render();toast("All data cleared")}};
+document.getElementById("clearAllBtn").onclick=()=>{if(confirm("Clear ALL local Rummy Arena data?")){localStorage.removeItem(KEY);store={...defaultState,modes:{rummy:modeDefault(),"7s":modeDefault()}};state=loadMode("rummy");render();toast("All data cleared")}};
 document.getElementById("ruleSelect").onchange=()=>{state.rule="lowest";save();toast("Lowest score wins")};
 document.getElementById("rummyModeBtn").onclick=()=>setMode("rummy");
 document.getElementById("sevensModeBtn").onclick=()=>setMode("7s");

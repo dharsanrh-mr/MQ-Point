@@ -1,15 +1,11 @@
-# Rummy Arena – Rummy + 7S
+# Rummy Arena v10 — Separate Rummy + 7S LocalStorage
 
-Mobile-only GitHub Pages app with LocalStorage.
-
-## 7S scoring
-- Exactly 7 rounds.
-- Round 1: entered points ×2 (2 → 4).
-- Rounds 2–6: normal points (2 → 2).
-- Round 7: entered points ×2 (2 → 4).
-- After saving Round 7, the lowest total automatically wins.
-- No Round 8 in 7S.
-
-## Rummy
-- Normal points.
-- Lowest total wins.
+- Rummy and 7S now have separate current-game storage.
+- Switching Rummy ↔ 7S NEVER resets either mode.
+- Return to Rummy: the previous Rummy players/rounds/winner are restored.
+- Return to 7S: the previous 7S players/rounds/winner are restored.
+- Rummy: normal points, lowest total wins.
+- 7S: R1 and R7 double entered points; R2–R6 are normal. Exactly 7 rounds.
+- Completing R7 automatically determines the lowest-total winner.
+- LocalStorage key is `rummyArena_v3`.
+- Existing data from the previous single-mode version is migrated into the currently selected mode on first load.
