@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#090909">
+  <title>Rummy Arena - Point Table</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div>
+        <div class="brand">♛ RUMMY ARENA</div>
+        <div class="subtitle">POINT TABLE</div>
+      </div>
+      <button class="icon-btn" id="newGameBtn" aria-label="New game">♛</button>
+    </header>
+
+    <main id="appContent">
+      <section id="homePage" class="page active">
+        <div class="game-switch">
+          <span>CURRENT GAME</span>
+          <strong id="gameLabel">GAME #1</strong>
+        </div>
+
+        <section class="winner-card">
+          <div class="trophy-art">🏆</div>
+          <div class="winner-info">
+            <div class="eyebrow">LATEST WINNER</div>
+            <h1 id="winnerName">—</h1>
+            <div class="winner-score"><span>★</span><b id="winnerScore">0</b></div>
+            <div class="date" id="winnerDate">No winner yet</div>
+          </div>
+        </section>
+
+        <div class="stats-grid">
+          <div class="stat"><span>👥 PLAYERS</span><b id="playerCount">0</b></div>
+          <div class="stat"><span>🔢 ROUNDS</span><b id="roundCount">0</b></div>
+          <div class="stat"><span>♛ LEADER</span><b id="leaderName">—</b></div>
+          <div class="stat"><span>⭐ TOP SCORE</span><b id="topScore">0</b></div>
+        </div>
+
+        <section class="panel">
+          <div class="panel-title"><span>📊 PLAYER RANKINGS</span></div>
+          <div id="rankingList" class="list"></div>
+          <button class="outline-btn" data-page="tablePage">VIEW POINT TABLE</button>
+        </section>
+
+        <section class="panel">
+          <div class="panel-title"><span>🏆 RECENT WINNERS</span></div>
+          <div id="winnerList" class="list"></div>
+          <button class="outline-btn" data-page="historyPage">VIEW HISTORY</button>
+        </section>
+      </section>
+
+      <section id="tablePage" class="page">
+        <div class="page-heading">
+          <div><span class="eyebrow">LIVE GAME</span><h2>POINT TABLE</h2></div>
+          <button class="gold-btn" id="finishBtn">FINISH</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+        <button class="red-btn wide" id="addRoundBtn">＋ ADD ROUND</button>
+        <button class="outline-btn wide" id="addPlayerBtn">＋ ADD PLAYER</button>
+      </section>
+
+      <section id="addPage" class="page">
+        <div class="page-heading"><div><span class="eyebrow">GAME SETUP</span><h2>ADD PLAYERS</h2></div></div>
+        <div class="form-card">
+          <label>Player name</label>
+          <div class="input-row">
+            <input id="playerInput" placeholder="Enter player name" maxlength="24">
+            <button class="gold-btn" id="savePlayerBtn">ADD</button>
+          </div>
+          <div id="playerChips" class="chips"></div>
+        </div>
+        <div class="form-card">
+          <label>New game</label>
+          <p class="muted">Starting a new game clears the current table after saving the current game to history.</p>
+          <button class="red-btn wide" id="startGameBtn">＋ START NEW GAME</button>
+        </div>
+      </section>
+
+      <section id="roundPage" class="page">
+        <div class="page-heading"><div><span class="eyebrow">ROUND <span id="nextRoundNo">1</span></span><h2>ENTER POINTS</h2></div></div>
+        <div id="scoreInputs" class="score-inputs"></div>
+        <button class="red-btn wide" id="saveRoundBtn">SAVE ROUND</button>
+      </section>
+
+      <section id="historyPage" class="page">
+        <div class="page-heading"><div><span class="eyebrow">SAVED GAMES</span><h2>HISTORY</h2></div></div>
+        <div id="historyList" class="history-list"></div>
+        <button class="outline-btn wide" id="backupBtn">⇩ BACKUP DATA</button>
+        <label class="outline-btn wide file-label">⇧ RESTORE DATA<input type="file" id="restoreInput" accept=".json"></label>
+        <button class="danger-btn wide" id="clearAllBtn">CLEAR ALL DATA</button>
+      </section>
+
+      <section id="morePage" class="page">
+        <div class="page-heading"><div><span class="eyebrow">SETTINGS</span><h2>MORE</h2></div></div>
+        <div class="form-card">
+          <label>Scoring rule</label>
+          <select id="ruleSelect">
+            <option value="highest">Highest total wins</option>
+            <option value="lowest">Lowest total wins</option>
+          </select>
+          <p class="muted">Choose how the winner and rankings are calculated.</p>
+        </div>
+        <div class="form-card">
+          <label>About</label>
+          <p class="muted">Rummy Arena is a mobile-first point table. Your data is stored locally in this browser/device.</p>
+        </div>
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-page="homePage"><span>⌂</span>Home</button>
+      <button class="nav-item" data-page="tablePage"><span>▦</span>Point Table</button>
+      <button class="nav-item" data-page="historyPage"><span>♛</span>Winners</button>
+      <button class="nav-item" data-page="addPage"><span>＋</span>Add Player</button>
+      <button class="nav-item" data-page="morePage"><span>⚙</span>More</button>
+    </nav>
+  </div>
+  <div id="toast" class="toast"></div>
+  <script src="app.js"></script>
+</body>
+</html>
