@@ -1,13 +1,15 @@
-# Rummy Arena Rummy + 7S v8
+# Rummy Arena – Rummy + 7S
 
-- Mobile-only
-- Red felt online background
-- Rummy: unlimited rounds, lowest total wins
-- 7S: exactly 7 rounds
-- 7S rounds 1-6 are normal
-- 7S round 7 doubles points (2 becomes 4)
-- 7S automatically calculates and announces the lowest-score winner immediately after Round 7 is saved
-- Round 8 cannot be added in 7S
-- Score/mark input area is enlarged and clearly focusable
-- LocalStorage + JSON backup/restore
-- GitHub Pages compatible
+Mobile-only GitHub Pages app with LocalStorage.
+
+## 7S scoring
+- Exactly 7 rounds.
+- Round 1: entered points ×2 (2 → 4).
+- Rounds 2–6: normal points (2 → 2).
+- Round 7: entered points ×2 (2 → 4).
+- After saving Round 7, the lowest total automatically wins.
+- No Round 8 in 7S.
+
+## Rummy
+- Normal points.
+- Lowest total wins.

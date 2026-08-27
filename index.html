@@ -176,8 +176,8 @@ function load(){try{return {...defaultState,...JSON.parse(localStorage.getItem(K
 function save(){localStorage.setItem(KEY,JSON.stringify(state));render()}
 function toast(msg){const t=document.getElementById("toast");if(!t)return;t.textContent=msg;t.classList.add("show");clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove("show"),1800)}
 function isSevenMode(){return state.mode==="7s"}
-function effectiveScore(raw,roundIndex){const n=Math.max(0,Number(raw)||0);return isSevenMode() && (roundIndex+1)%7===0?n*2:n}
-function roundLabel(i){return isSevenMode() && (i+1)%7===0?`R${i+1} ×2`:`R${i+1}`}
+function effectiveScore(raw,roundIndex){const n=Math.max(0,Number(raw)||0);const r=roundIndex+1;return isSevenMode() && (r===1||r===7)?n*2:n}
+function roundLabel(i){const r=i+1;return isSevenMode() && (r===1||r===7)?`R${r} ×2`:`R${r}`}
 function totals(){return state.players.map((name,i)=>({name,total:state.rounds.reduce((sum,r,ri)=>sum+effectiveScore(r.scores[i],ri),0)}))}
 function ranked(){return totals().sort((a,b)=>a.total-b.total)}
 function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
@@ -186,7 +186,7 @@ function updateModeUI(){
  const r=document.getElementById("rummyModeBtn"),s=document.getElementById("sevensModeBtn");
  if(r&&s){r.classList.toggle("active",state.mode==="rummy");s.classList.toggle("active",state.mode==="7s")}
  const rule=document.getElementById("modeRuleText");
- if(rule)rule.textContent=state.mode==="7s"?"7S: exactly 7 rounds. R1–R6 normal; R7 doubles points (2 → 4). After R7, the lowest total automatically wins.":"Rummy: normal points. Lowest total points wins.";
+ if(rule)rule.textContent=state.mode==="7s"?"7S: exactly 7 rounds. R1 and R7 double points (2 → 4); R2–R6 are normal. After R7, the lowest total automatically wins.":"Rummy: normal points. Lowest total points wins.";
 }
 function go(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.querySelectorAll(".nav-item").forEach(n=>n.classList.toggle("active",n.dataset.page===id));if(id==="roundPage")renderScoreInputs();window.scrollTo({top:0,behavior:"smooth"})}
 function render(){
@@ -216,8 +216,8 @@ function renderScoreInputs(){
  const rn=state.rounds.length+1;
  document.getElementById("nextRoundNo").textContent=isSevenMode()?`${rn}/7`:rn;
  if(isSevenMode()&&rn>7){document.getElementById("scoreInputs").innerHTML=`<div class="form-card"><label>7S GAME COMPLETE</label><p class="muted">Round 7 is already completed. Winner: <b>${esc(state.winner?.name||"—")}</b></p></div>`;return}
- const seventh=isSevenMode()&&rn===7;
- document.getElementById("scoreInputs").innerHTML=state.players.map(p=>`<div class="score-line"><span><b>${esc(p)}</b>${seventh?` <span class="seven-badge">7S ×2</span>`:""}</span><input class="score-mark" type="number" min="0" step="1" inputmode="numeric" data-player="${escAttr(p)}" placeholder="${seventh?'Enter points (×2)':'Enter points'}" aria-label="Points for ${escAttr(p)}"></div>`).join("")||`<div class="muted">Add players first.</div>`;
+ const doubled=isSevenMode()&&(rn===1||rn===7);
+ document.getElementById("scoreInputs").innerHTML=state.players.map(p=>`<div class="score-line"><span><b>${esc(p)}</b>${doubled?` <span class="seven-badge">7S ×2</span>`:""}</span><input class="score-mark" type="number" min="0" step="1" inputmode="numeric" data-player="${escAttr(p)}" placeholder="${doubled?'Enter points (×2)':'Enter points'}" aria-label="Points for ${escAttr(p)}"></div>`).join("")||`<div class="muted">Add players first.</div>`;
 }
 function renderHistory(){document.getElementById("historyList").innerHTML=state.history.map((g,i)=>`<div class="history-card"><strong>GAME #${g.gameNo} • ${g.mode==="7s"?"7S":"RUMMY"}</strong><div>${esc(g.winner.name)} — ${g.winner.score} points</div><div class="muted">${esc(g.winner.date)} • ${g.players.length} players • ${g.rounds.length} rounds</div><button class="outline-btn" type="button" onclick="deleteHistory(${i})">DELETE</button></div>`).join("")||`<div class="muted">Completed games will appear here.</div>`}
 function addPlayer(){const input=document.getElementById("playerInput"),name=input.value.trim();if(!name)return toast("Enter a player name");if(state.players.some(p=>p.toLowerCase()===name.toLowerCase()))return toast("Player already exists");state.players.push(name);input.value="";save();toast("Player added")}
