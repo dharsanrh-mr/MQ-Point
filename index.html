@@ -5,41 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#090909">
   <title>Rummy Arena • Rummy + 7S Point Table</title>
-  <style>
+  
+<style>
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#240407;color:#fff;font-family:Arial,Helvetica,sans-serif}
+html,body{margin:0;min-height:100%;background:#f5f5f3;color:#171717;font-family:Inter,Arial,Helvetica,sans-serif}
 body{padding-bottom:92px;overflow-x:hidden}
-body:before{content:"";position:fixed;inset:0;z-index:-3;background-image:url("https://content.instructables.com/FJH/TX2P/I7OLHXD5/FJHTX2PI7OLHXD5.jpg?auto=webp&frame=1");background-size:cover;background-position:center top;background-attachment:fixed;filter:saturate(1.05) contrast(1.05)}
-body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradient(180deg,rgba(12,0,2,.68),rgba(12,0,2,.88) 42%,rgba(5,4,6,.96));pointer-events:none}
+body:before{content:"";position:fixed;inset:0;z-index:-3;background:
+radial-gradient(circle at 12% 18%,rgba(0,0,0,.025) 0 1px,transparent 1.5px),
+radial-gradient(circle at 80% 72%,rgba(176,138,50,.035) 0 1px,transparent 1.5px);background-size:30px 30px,38px 38px}
+body:after{content:"♠  ♥  ♦  ♣";position:fixed;inset:0;z-index:-2;color:rgba(0,0,0,.018);font-size:54px;letter-spacing:30px;line-height:150px;word-spacing:20px;pointer-events:none}
 .app{width:100%;max-width:520px;margin:auto;padding:12px 14px 25px}
-.topbar{border:1px solid rgba(255,90,83,.55);border-radius:22px;background:rgba(12,10,12,.88);backdrop-filter:blur(12px);padding:15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;box-shadow:0 8px 28px #0009}
-.brand{font-size:26px;font-weight:900;color:#fff;letter-spacing:.7px}.brand:before{content:"♠ ";color:#ff3030}
-.subtitle{font-size:11px;letter-spacing:4px;color:#aaa;margin-top:6px}
-.icon-btn{width:48px;height:48px;border-radius:12px;border:1px solid #ff5b55;background:#17090b;color:#fff;font-size:22px}
-.game-switch{height:55px;border:1px solid #ff5b55;border-radius:30px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:linear-gradient(90deg,#df201b 0 52%,rgba(12,12,14,.9) 52%);box-shadow:0 5px 18px #e21c1938;margin-bottom:14px}
-.game-switch span,.game-switch strong{font-weight:900}.game-switch span{font-size:13px;letter-spacing:1px}
-.winner-card{border:1px solid #ff5b55;border-radius:23px;padding:16px;background:rgba(8,8,10,.82);backdrop-filter:blur(8px);display:grid;grid-template-columns:43% 57%;min-height:218px;overflow:hidden;box-shadow:0 10px 30px #0008}
-.trophy-art{display:flex;align-items:center;justify-content:center;font-size:82px;filter:drop-shadow(0 0 16px #ff2424aa)}
-.winner-info{display:flex;flex-direction:column;justify-content:center}.eyebrow{color:#ff6760;font-weight:900;font-size:12px;letter-spacing:1.5px;text-align:center}
-.winner-info h1{font-size:32px;text-align:center;margin:10px 0}.winner-score{border:1px solid #ff5b55;border-radius:17px;background:#0d0d10;padding:7px;display:flex;justify-content:center;gap:8px;align-items:center}.winner-score span{font-size:26px;color:#ff403a}.winner-score b{font-size:36px;color:#fff}.date{font-size:10px;color:#aaa;text-align:center;margin-top:9px;white-space:nowrap}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}.stat{border:1px solid #713337;border-radius:16px;padding:12px;background:rgba(9,9,11,.82);backdrop-filter:blur(7px)}.stat span{display:block;color:#aaa;font-size:9px;letter-spacing:1px}.stat b{display:block;color:#fff;font-size:18px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.panel{border:1px solid #a53b39;border-radius:20px;padding:14px;margin:12px 0;background:rgba(7,8,10,.86);backdrop-filter:blur(9px);box-shadow:0 8px 25px #0008}.panel-title{color:#ff6962;font-weight:900;font-size:15px;margin:0 0 9px;text-align:center;letter-spacing:.5px}
-.list-row{display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:center;padding:10px 3px;border-bottom:1px solid #282124}.list-row:last-child{border-bottom:0}.rank{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;border:1px solid #704247;background:#121114;color:#ff5b55;font-weight:900}.list-row strong{font-size:14px}.list-row small{display:block;color:#8d8a8b;font-size:10px;margin-top:2px}.points{color:#ff5b55;font-size:15px;font-weight:900}
-.outline-btn,.gold-btn,.red-btn,.danger-btn{font:inherit;font-size:13px;font-weight:900;border-radius:13px;padding:12px 14px;cursor:pointer}.outline-btn{width:100%;margin-top:10px;background:#120b0d;color:#ff625b;border:1px solid #d73b36}.red-btn{background:linear-gradient(135deg,#ff302a,#b40f0c);border:1px solid #ff6b64;color:#fff;box-shadow:0 5px 18px #d61c1845}.gold-btn{background:#171719;border:1px solid #777;color:#fff}.danger-btn{background:#260d0f;border:1px solid #8d302d;color:#ff7772}
-.wide{width:100%;margin-top:10px}
-.page{display:none}.page.active{display:block}.page-heading{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 13px}.page-heading h2{font-size:23px;margin:5px 0;color:#fff}
-.table-wrap{overflow-x:auto;border:1px solid #9c3b37;border-radius:17px;background:rgba(6,7,9,.9)}.table-wrap table{border-collapse:collapse;min-width:560px;width:100%;font-size:12px}.table-wrap th{color:#fff;background:#5f1214}.table-wrap th,.table-wrap td{padding:11px 9px;text-align:center;border-bottom:1px solid #2b2224}.table-wrap td:first-child,.table-wrap th:first-child{text-align:left}.table-wrap td:last-child{font-weight:900;color:#ff5c55}.leader-row{background:#4d151644}
-.form-card{border:1px solid #7d3433;border-radius:18px;padding:14px;margin-bottom:11px;background:rgba(8,8,10,.86)}.form-card label{display:block;color:#ff716a;font-size:12px;font-weight:900;margin-bottom:8px}.input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.input-row input,.score-line input,select{width:100%;background:#0b0b0e;color:#fff;border:1px solid #773331;border-radius:11px;padding:12px;font-size:14px;outline:none}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.chip{border:1px solid #733332;background:#150d0f;border-radius:18px;padding:7px 10px;font-size:12px}.chip button{border:0;background:none;color:#ff6b62;margin-left:4px}.score-inputs{display:flex;flex-direction:column;gap:9px}.score-line{display:grid;grid-template-columns:1fr 95px;align-items:center;gap:10px;padding:10px 11px;border:1px solid #5c3030;border-radius:13px;background:#101012}.score-line input{padding:10px}.muted{color:#999;font-size:12px;line-height:1.5}
-.history-card{border:1px solid #743130;border-radius:15px;background:rgba(11,9,11,.88);padding:12px;margin-bottom:9px}.history-card strong{color:#ff625b}.file-label{display:block;text-align:center}.file-label input{display:none}
-.bottom-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);padding:7px 5px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:rgba(8,8,10,.96);backdrop-filter:blur(14px);border-top:1px solid #743130;box-shadow:0 -10px 30px #000c}.nav-item{border:0;border-radius:12px;background:transparent;color:#aaa;font-size:9px;padding:6px 1px}.nav-item span{display:block;font-size:21px;line-height:21px;color:#ff5b55;margin-bottom:3px}.nav-item.active{background:linear-gradient(145deg,#e42620,#8f0c0a);color:#fff;box-shadow:0 0 15px #df211d55}.nav-item.active span{color:#fff}
-.toast{position:fixed;z-index:60;left:50%;bottom:100px;transform:translate(-50%,15px);opacity:0;background:#180b0d;border:1px solid #e0443e;color:#fff;border-radius:12px;padding:10px 14px;font-size:12px;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:380px){.app{padding-left:9px;padding-right:9px}.brand{font-size:23px}.winner-card{grid-template-columns:40% 60%;min-height:205px}.trophy-art{font-size:68px}.winner-info h1{font-size:28px}.winner-score b{font-size:31px}.date{font-size:9px}}
+.topbar{border:1px solid #e5e5e1;border-radius:22px;background:#fff;padding:15px;display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;box-shadow:0 8px 28px rgba(0,0,0,.07)}
+.brand{font-size:25px;font-weight:900;color:#171717;letter-spacing:.5px}.brand:before{content:"♠ ";color:#b08a32}.subtitle{font-size:10px;letter-spacing:4px;color:#888;margin-top:6px}
+.icon-btn{width:48px;height:48px;border-radius:15px;border:1px solid #ddd;background:#171717;color:#fff;font-size:21px}
+.game-switch{height:54px;border:1px solid #e2e2df;border-radius:30px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:#fff;box-shadow:0 5px 18px rgba(0,0,0,.05);margin-bottom:14px}.game-switch span{font-size:12px;letter-spacing:1px;color:#888}.game-switch strong{color:#171717}
+.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin:2px 0 12px;padding:4px;background:#e9e9e6;border-radius:17px}
+.mode-tab{height:45px;border:0;border-radius:13px;background:transparent;color:#777;font-weight:900;font-size:13px}.mode-tab.active{background:#171717;color:#fff;box-shadow:0 5px 14px rgba(0,0,0,.14)}
+.winner-card{border:1px solid #e4e4e1;border-top:2px solid #c2a45c;border-radius:23px;padding:16px;background:#fff;display:grid;grid-template-columns:43% 57%;min-height:218px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.07)}
+.trophy-art{display:flex;align-items:center;justify-content:center;font-size:82px}.winner-info{display:flex;flex-direction:column;justify-content:center}.eyebrow{color:#9b7a2e;font-weight:900;font-size:11px;letter-spacing:1.5px;text-align:center}.winner-info h1{font-size:31px;text-align:center;margin:10px 0;color:#171717}.winner-score{border:1px solid #e4e4e1;border-radius:17px;background:#fafaf8;padding:7px;display:flex;justify-content:center;gap:8px;align-items:center}.winner-score span{font-size:24px;color:#b08a32}.winner-score b{font-size:35px;color:#171717}.date{font-size:10px;color:#888;text-align:center;margin-top:9px;white-space:nowrap}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}.stat{border:1px solid #e5e5e1;border-radius:16px;padding:12px;background:#fff;box-shadow:0 6px 20px rgba(0,0,0,.045)}.stat span{display:block;color:#888;font-size:9px;letter-spacing:1px}.stat b{display:block;color:#171717;font-size:18px;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.panel,.form-card,.history-card,.progress-card,.analytics-box,.undo-card{border:1px solid #e4e4e1;border-radius:20px;padding:14px;margin:12px 0;background:#fff;box-shadow:0 8px 25px rgba(0,0,0,.055)}.panel-title{color:#171717;font-weight:900;font-size:15px;margin:0 0 9px;text-align:center;letter-spacing:.5px}
+.list-row{display:grid;grid-template-columns:34px 1fr auto;gap:9px;align-items:center;padding:10px 3px;border-bottom:1px solid #eee}.list-row:last-child{border-bottom:0}.rank{width:29px;height:29px;border-radius:50%;display:grid;place-items:center;border:1px solid #ddd;background:#fafaf8;color:#171717;font-weight:900}.list-row strong{font-size:14px;color:#171717}.list-row small{display:block;color:#888;font-size:10px;margin-top:2px}.points{color:#171717;font-size:15px;font-weight:900}
+.outline-btn,.gold-btn,.red-btn,.danger-btn{font:inherit;font-size:13px;font-weight:900;border-radius:13px;padding:12px 14px;cursor:pointer}.outline-btn,.red-btn,.danger-btn{background:#171717;color:#fff;border:1px solid #171717}.gold-btn{background:#fff;color:#171717;border:1px solid #c9b47c}.wide{width:100%;margin-top:10px}
+.page{display:none}.page.active{display:block}.page-heading{display:flex;justify-content:space-between;align-items:center;margin:8px 2px 13px}.page-heading h2{font-size:23px;margin:5px 0;color:#171717}
+.table-wrap{overflow-x:auto;border:1px solid #e1e1dd;border-radius:17px;background:#fff;box-shadow:0 7px 22px rgba(0,0,0,.05)}.table-wrap table{border-collapse:collapse;min-width:560px;width:100%;font-size:12px}.table-wrap th{color:#fff;background:#171717}.table-wrap th,.table-wrap td{padding:11px 9px;text-align:center;border-bottom:1px solid #eee}.table-wrap td:first-child,.table-wrap th:first-child{text-align:left}.table-wrap td:last-child{font-weight:900;color:#171717}.leader-row{background:rgba(192,164,91,.10)}
+.form-card label{display:block;color:#9b7a2e;font-size:12px;font-weight:900;margin-bottom:8px}.input-row{display:grid;grid-template-columns:1fr auto;gap:8px}.input-row input,.score-line input,select{width:100%;background:#fff;color:#171717;border:1px solid #ddd;border-radius:12px;padding:12px;font-size:14px;outline:none}.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}.chip{border:1px solid #ddd;background:#f7f7f4;border-radius:18px;padding:7px 10px;font-size:12px}.chip button{border:0;background:none;color:#555;margin-left:4px}.score-inputs{display:flex;flex-direction:column;gap:9px}.score-line{display:grid;grid-template-columns:1fr 105px;align-items:center;gap:10px;padding:10px 11px;min-height:70px;border:1px solid #e0e0dc;border-radius:17px;background:#fff;box-shadow:0 7px 22px rgba(0,0,0,.045)}.score-line input{padding:12px;text-align:center;font-size:20px;font-weight:900}.score-line:focus-within{border-color:#b08a32;box-shadow:0 0 0 3px rgba(176,138,50,.10)}.seven-badge{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:8px;background:#171717;color:#fff;font-size:9px;font-weight:900}.muted{color:#777;font-size:12px;line-height:1.5}.history-card strong{color:#171717}.file-label{display:block;text-align:center}.file-label input{display:none}
+.bottom-nav{position:fixed;z-index:30;left:50%;bottom:0;transform:translateX(-50%);width:min(520px,100%);padding:7px 5px calc(7px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(5,1fr);gap:3px;background:rgba(255,255,255,.97);backdrop-filter:blur(14px);border:1px solid #e4e4e1;border-bottom:0;border-radius:18px 18px 0 0;box-shadow:0 -10px 30px rgba(0,0,0,.08)}.nav-item{border:0;border-radius:12px;background:transparent;color:#888;font-size:9px;padding:6px 1px}.nav-item span{display:block;font-size:21px;line-height:21px;color:#888;margin-bottom:3px}.nav-item.active{background:#f0f0ed;color:#171717}.nav-item.active span{color:#171717}
+.progress-card{padding:14px}.progress-head{display:flex;justify-content:space-between;font-size:11px;font-weight:900}.progress-track{height:8px;background:#eee;border-radius:99px;margin-top:10px;overflow:hidden}.progress-fill{height:100%;width:0;background:#b08a32;border-radius:99px;transition:.25s}.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:12px 0}.analytics-box{margin:0}.analytics-box small{display:block;color:#888;font-size:9px;letter-spacing:1px}.analytics-box b{display:block;color:#171717;font-size:20px;margin-top:5px}.filter-bar{display:grid;grid-template-columns:1fr auto;gap:8px;margin:12px 0}.filter-bar input,.filter-bar select{border:1px solid #ddd;border-radius:13px;padding:11px;background:#fff}.action-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.toast{position:fixed;z-index:60;left:50%;bottom:100px;transform:translate(-50%,15px);opacity:0;background:#171717;border:1px solid #171717;color:#fff;border-radius:12px;padding:10px 14px;font-size:12px;transition:.25s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:380px){.app{padding-left:9px;padding-right:9px}.brand{font-size:22px}.winner-card{grid-template-columns:40% 60%;min-height:205px}.trophy-art{font-size:68px}.winner-info h1{font-size:28px}.winner-score b{font-size:31px}}
+</style>
 
-.mode-tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:2px 0 12px}
-.mode-tab{height:46px;border:1px solid #713337;border-radius:13px;background:rgba(10,8,10,.88);color:#aaa;font-weight:900;font-size:13px}
-.mode-tab.active{background:linear-gradient(135deg,#f02b25,#a70f0d);color:#fff;border-color:#ff6861;box-shadow:0 0 16px #e3262050}
-.seven-badge{display:inline-block;margin-left:5px;padding:2px 6px;border-radius:8px;background:#8f0d0b;color:#fff;font-size:9px;font-weight:900}
-.score-line{min-height:62px;cursor:text}.score-mark{min-height:44px;font-size:17px!important;text-align:center;font-weight:900}.score-mark:focus{border-color:#ff5b55!important;box-shadow:0 0 0 3px #ff332633,0 0 16px #ff332633}.score-line:focus-within{border-color:#ff5b55;box-shadow:0 0 14px #ff332633}</style>
 </head>
 <body>
   <div class="app">
@@ -79,7 +74,19 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
           <div class="stat"><span>⭐ TOP SCORE</span><b id="topScore">0</b></div>
         </div>
 
-        <section class="panel">
+        
+<section class="progress-card">
+  <div class="progress-head"><span>GAME PROGRESS</span><span id="progressText">0 / 0</span></div>
+  <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+</section>
+<div class="analytics-grid">
+  <div class="analytics-box"><small>GAMES PLAYED</small><b id="gamesPlayed">0</b></div>
+  <div class="analytics-box"><small>WINS</small><b id="winsCount">0</b></div>
+  <div class="analytics-box"><small>WIN RATE</small><b id="winRate">0%</b></div>
+  <div class="analytics-box"><small>BEST SCORE</small><b id="bestScore">0</b></div>
+</div>
+
+<section class="panel">
           <div class="panel-title"><span>📊 PLAYER RANKINGS</span></div>
           <div id="rankingList" class="list"></div>
           <button class="outline-btn" data-page="tablePage">VIEW POINT TABLE</button>
@@ -105,6 +112,15 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
         </div>
         <button class="red-btn wide" id="addRoundBtn">＋ ADD ROUND</button>
         <button class="outline-btn wide" id="addPlayerBtn">＋ ADD PLAYER</button>
+<div class="undo-card">
+  <div class="panel-title" style="text-align:left">ROUND CONTROLS</div>
+  <div class="muted">Fix the latest saved round when needed.</div>
+  <div class="action-row">
+    <button class="outline-btn" id="editLastBtn" style="margin-top:0">✏️ EDIT LAST</button>
+    <button class="danger-btn" id="undoLastBtn" style="margin-top:0">↩ UNDO LAST</button>
+  </div>
+</div>
+
       </section>
 
       <section id="addPage" class="page">
@@ -132,7 +148,12 @@ body:after{content:"";position:fixed;inset:0;z-index:-2;background:linear-gradie
 
       <section id="historyPage" class="page">
         <div class="page-heading"><div><span class="eyebrow">SAVED GAMES</span><h2>HISTORY</h2></div></div>
-        <div id="historyList" class="history-list"></div>
+        
+<div class="filter-bar">
+<input id="historySearch" placeholder="Search player or game..." aria-label="Search history">
+<select id="historyModeFilter"><option value="all">All</option><option value="rummy">Rummy</option><option value="7s">7S</option></select>
+</div>
+<div id="historyList" class="history-list"></div>
         <button class="outline-btn wide" id="backupBtn">⇩ BACKUP DATA</button>
         <label class="outline-btn wide file-label">⇧ RESTORE DATA<input type="file" id="restoreInput" accept=".json"></label>
         <button class="danger-btn wide" id="clearAllBtn">CLEAR ALL DATA</button>
@@ -262,7 +283,7 @@ function render(){
  document.getElementById("winnerDate").textContent=winner?.date||"No winner yet";
  document.getElementById("rankingList").innerHTML=r.slice(0,5).map((p,i)=>`<div class="list-row"><span class="rank">${i+1}</span><div><strong>${esc(p.name)}</strong><small>${state.rounds.length}${isSevenMode()?"/7":""} rounds</small></div><span class="points">${p.total}</span></div>`).join("")||`<div class="muted">Add players to begin.</div>`;
  document.getElementById("winnerList").innerHTML=state.history.filter(g=>g.mode===state.mode).slice(0,5).map(g=>`<div class="list-row"><span class="rank">♛</span><div><strong>${esc(g.winner.name)}</strong><small>${esc(g.date)} • ${g.mode==="7s"?"7S":"Rummy"}</small></div><span class="points">${g.winner.score}</span></div>`).join("")||`<div class="muted">No completed ${isSevenMode()?"7S":"Rummy"} games yet.</div>`;
- renderTable();renderPlayers();renderHistory();
+ renderTable();renderPlayers();renderHistory();renderAnalytics();
  const rs=document.getElementById("ruleSelect");if(rs)rs.value="lowest";
 }
 function renderTable(){
@@ -338,7 +359,53 @@ function restore(file){
  };reader.readAsText(file)
 }
 
+
+function renderAnalytics(){
+  const games=state.history.filter(g=>g.mode===state.mode);
+  const played=games.length+(state.rounds.length?1:0);
+  const wins=games.length;
+  const scores=games.map(g=>Number(g.winner&&g.winner.score)||0);
+  const best=scores.length?Math.min(...scores):0;
+  const pct=played?Math.round(wins/played*100):0;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v};
+  set("gamesPlayed",played);set("winsCount",wins);set("winRate",pct+"%");set("bestScore",best);
+  const max=isSevenMode()?7:Math.max(state.rounds.length,1);
+  const done=state.rounds.length;
+  set("progressText",isSevenMode()?done+" / 7":done+" round"+(done===1?"":"s"));
+  const fill=document.getElementById("progressFill");if(fill)fill.style.width=Math.min(100,Math.round(done/max*100))+"%";
+}
+function undoLastRound(){
+  if(!state.rounds.length)return toast("No round to undo");
+  if(!confirm("Undo the latest round?"))return;
+  state.rounds.pop();state.winner=null;save();go("tablePage");toast("Latest round removed");
+}
+function editLastRound(){
+  if(!state.rounds.length)return toast("No round to edit");
+  const last=state.rounds.pop();
+  state.winner=null;
+  save();
+  go("roundPage");
+  requestAnimationFrame(()=>document.querySelectorAll("#scoreInputs input").forEach(x=>{
+    const i=state.players.indexOf(x.dataset.player);x.value=last.scores[i]??0;
+  }));
+}
+function filterHistory(){
+  const q=(document.getElementById("historySearch")?.value||"").trim().toLowerCase();
+  const mf=document.getElementById("historyModeFilter")?.value||"all";
+  const list=state.history.map((g,i)=>({g,i})).filter(x=>{
+    const g=x.g;
+    return (mf==="all"||g.mode===mf) && (!q||String(g.gameNo).includes(q)||String(g.winner&&g.winner.name||"").toLowerCase().includes(q));
+  });
+  document.getElementById("historyList").innerHTML=list.map(x=>{const g=x.g;return `<div class="history-card"><strong>GAME #${g.gameNo} • ${g.mode==="7s"?"7S":"RUMMY"}</strong><div>${esc(g.winner.name)} — ${g.winner.score} points</div><div class="muted">${esc(g.winner.date)} • ${g.players.length} players • ${g.rounds.length} rounds</div><button class="outline-btn" type="button" onclick="deleteHistory(${x.i})">DELETE</button></div>`}).join("")||`<div class="muted">No matching games.</div>`;
+}
+
 document.addEventListener("click",e=>{const n=e.target.closest("[data-page]");if(n){e.preventDefault();go(n.dataset.page)}});
+
+document.getElementById("undoLastBtn").onclick=undoLastRound;
+document.getElementById("editLastBtn").onclick=editLastRound;
+document.getElementById("historySearch").addEventListener("input",filterHistory);
+document.getElementById("historyModeFilter").addEventListener("change",filterHistory);
+
 document.getElementById("savePlayerBtn").onclick=addPlayer;
 document.getElementById("playerInput").addEventListener("keydown",e=>{if(e.key==="Enter")addPlayer()});
 document.getElementById("addRoundBtn").onclick=addRound;
